@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""Defines the function matrix_shape(matrix)"""
+
+
 def matrix_shape(matrix):
     """Calculates the shape of a matrix
 

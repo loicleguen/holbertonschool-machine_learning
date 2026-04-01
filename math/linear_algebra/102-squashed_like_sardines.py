@@ -14,7 +14,10 @@ def cat_matrices(mat1, mat2, axis=0):
         return [len(mat)] + shape(mat[0])
 
     if axis == 0:
-        if len(shape(mat1)) != len(shape(mat2)) or shape(mat1)[1:] != shape(mat2)[1:]:
+        if (
+            len(shape(mat1)) != len(shape(mat2)) or
+            shape(mat1)[1:] != shape(mat2)[1:]
+        ):
             return None
         return copy.deepcopy(mat1) + copy.deepcopy(mat2)
 

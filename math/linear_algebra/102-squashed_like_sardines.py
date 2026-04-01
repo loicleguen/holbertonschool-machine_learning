@@ -20,8 +20,10 @@ def cat_matrices(mat1, mat2, axis=0):
         else:
             return None
     if axis == 0:
-        return ([copy.deepcopy(row) for row in mat1]
-                + [copy.deepcopy(row) for row in mat2])
+        return (
+            [copy.deepcopy(row) for row in mat1] +
+            [copy.deepcopy(row) for row in mat2]
+        )
     if len(mat1) != len(mat2):
         return None
     result = []

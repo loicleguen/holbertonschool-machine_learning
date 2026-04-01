@@ -31,5 +31,5 @@ def cat_matrices(mat1, mat2, axis=0):
         merged = cat_matrices(a, b, axis=axis-1)
         if merged is None:
             return None
-        result.append(merged)
+        result.append(copy.deepcopy(merged))
     return result

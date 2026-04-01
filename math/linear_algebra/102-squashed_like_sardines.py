@@ -31,5 +31,8 @@ def cat_matrices(mat1, mat2, axis=0):
         merged = cat_matrices(a, b, axis=axis-1)
         if merged is None:
             return None
-        result.append(copy.deepcopy(merged))
+        if isinstance(merged, list):
+            result.append(list(merged))
+        else:
+            result.append(merged)
     return result

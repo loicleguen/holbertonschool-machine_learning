@@ -43,6 +43,7 @@ def all_in_one():
     ax1.set_xlabel("Height (in)", fontsize='x-small')
     ax1.set_ylabel("Weight (lbs)", fontsize='x-small')
     ax1.set_title("Men's Height vs Weight", fontsize='x-small')
+    ax1.set_xticks(range(60, 81, 10))
 
     # 2. change scale
     ax2 = fig.add_subplot(gs[1, 0])
@@ -52,6 +53,7 @@ def all_in_one():
     ax2.set_title("Exponential Decay of C-14", fontsize='x-small')
     ax2.set_yscale("log")
     ax2.set_xlim(0, 28650)
+    ax2.set_xticks(range(0, 28651, 10000))
 
     # 3. two
     ax3 = fig.add_subplot(gs[1, 1])
@@ -64,6 +66,7 @@ def all_in_one():
     ax3.set_xlim(0, 20000)
     ax3.set_ylim(0, 1)
     ax3.legend(loc='upper right', fontsize='x-small')
+    ax3.set_yticks(np.arange(0.0, 1.1, 0.5))
 
     # 4. frequency
     ax4 = fig.add_subplot(gs[2, :])
@@ -75,5 +78,5 @@ def all_in_one():
     ax4.set_xlim(0, 100)
     ax4.set_ylim(0, 30)
 
-    fig.suptitle("All in one", fontsize='x-small')
+    fig.suptitle("All in one", fontsize='large')
     plt.show()

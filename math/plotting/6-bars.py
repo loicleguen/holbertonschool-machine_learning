@@ -11,14 +11,14 @@ def bars():
     plt.figure(figsize=(6.4, 4.8))
 
     people = ['Farrah', 'Fred', 'Felicia']
-    fuits = ['apples', 'bananas', 'oranges', 'peaches']
+    fruits = ['apples', 'bananas', 'oranges', 'peaches']
     colors = ['red', 'yellow', '#ff8000', '#ffe5b4']
 
     bottom = np.zeros(3)
     for i in range(4):
         plt.bar(
             people, fruit[i], width=0.5, bottom=bottom,
-            color=colors[i], label=fuits[i]
+            color=colors[i], label=fruits[i]
             )
         bottom += fruit[i]
 

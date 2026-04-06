@@ -2,6 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 def line():
     """Draw a line plot of y = x^3 for x in the range [0, 10]."""
     y = np.arange(0, 11) ** 3

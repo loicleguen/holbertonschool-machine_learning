@@ -16,10 +16,10 @@ fig = plt.figure(figsize=(8, 6))
 ax = fig.add_subplot(111, projection='3d')
 sc = ax.scatter(
     pca_data[:, 0], pca_data[:, 1], pca_data[:, 2],
-    c=labels, cmap='plasma', s=40
+    c=labels, cmap='plasma', s=50
 )
 ax.set_xlabel("U1")
 ax.set_ylabel("U2")
 ax.set_zlabel("U3")
-ax.set_title("PCA of Iris Dataset")
+ax.set_title("PCA of Iris Dataset", fontsize='xx-large')
 plt.show()

@@ -103,7 +103,7 @@ class Node:
             feature > lower for ALL features"""
             return np.all(
                 np.array(
-                    [np.greater_equal(
+                    [np.greater(
                         x[:, key], self.lower[key]) for key in list(
                             self.lower.keys())]), axis=0)
 

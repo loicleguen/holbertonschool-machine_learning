@@ -56,12 +56,11 @@ class Node:
     def __str__(self):
         """Return a string representation of the node"""
         if self.is_root:
-            node_repr = (
-                f"root [feature={self.feature}, threshold={self.threshold}]")
+            node_repr = (f"root [feature={self.feature}, "
+                         f"threshold={self.threshold}]")
         else:
-            node_repr = (
-                f"-> node [feature={self.feature}, threshold={self.threshold}]"
-                )
+            node_repr = (f"-> node [feature={self.feature}, "
+                         f"threshold={self.threshold}]")
 
         left_str = self.left_child.__str__()
         right_str = self.right_child.__str__()

@@ -11,6 +11,7 @@ class Node:
                  right_child=None,
                  is_root=False,
                  depth=0):
+        """Initialize a node"""
         self.feature = feature
         self.threshold = threshold
         self.left_child = left_child
@@ -21,18 +22,21 @@ class Node:
         self.depth = depth
 
     def max_depth_below(self):
+        """Return the maximum depth of the tree below this node"""
         return max(self.left_child.max_depth_below(),
                    self.right_child.max_depth_below())
 
 
 class Leaf(Node):
     def __init__(self, value, depth=None):
+        """Initialize a leaf node"""
         super().__init__()
         self.value = value
         self.is_leaf = True
         self.depth = depth
 
     def max_depth_below(self):
+        """Return the maximum depth of the tree below this node"""
         return self.depth
 
 
@@ -43,6 +47,7 @@ class Decision_Tree():
                  seed=0,
                  split_criterion="random",
                  root=None):
+        """Initialize the decision tree"""
         self.rng = np.random.default_rng(seed)
         if root:
             self.root = root
@@ -56,4 +61,5 @@ class Decision_Tree():
         self.predict = None
 
     def depth(self):
+        """Return the depth of the tree"""
         return self.root.max_depth_below()

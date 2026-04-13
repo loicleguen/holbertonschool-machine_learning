@@ -40,7 +40,7 @@ class Node:
     def left_child_add_prefix(self, text):
         """Add a prefix to the left child of this node"""
         lines = text.split("\n")
-        new_text = "    +---" + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
             new_text += ("    |  " + x) + "\n"
         return new_text
@@ -48,7 +48,7 @@ class Node:
     def right_child_add_prefix(self, text):
         """Add a prefix to the right child of this node"""
         lines = text.split("\n")
-        new_text = "    +---" + lines[0] + "\n"
+        new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
             new_text += ("       " + x) + "\n"
         return new_text
@@ -60,7 +60,8 @@ class Node:
                 f"root [feature={self.feature}, threshold={self.threshold}]")
         else:
             node_repr = (
-                f"> node [feature={self.feature}, threshold={self.threshold}]")
+                f"-> node [feature={self.feature}, threshold={self.threshold}]"
+                )
 
         left_str = self.left_child.__str__()
         right_str = self.right_child.__str__()
@@ -91,7 +92,7 @@ class Leaf(Node):
 
     def __str__(self):
         """Return a string representation of the leaf node"""
-        return (f"> leaf [value={self.value}]")
+        return (f"-> leaf [value={self.value}]")
 
 
 class Decision_Tree():

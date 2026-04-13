@@ -131,4 +131,5 @@ class Decision_Tree():
         return self.root.__str__()
 
     def get_leaves(self):
+        """Method that returns a list of the leaves in the tree"""
         return self.root.get_leaves_below()

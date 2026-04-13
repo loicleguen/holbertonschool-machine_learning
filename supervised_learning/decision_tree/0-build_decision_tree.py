@@ -5,6 +5,7 @@ import numpy as np
 
 
 class Node:
+    """Class that represents a node in a decision tree"""
     def __init__(self, feature=None,
                  threshold=None,
                  left_child=None,
@@ -28,6 +29,7 @@ class Node:
 
 
 class Leaf(Node):
+    """Class that represents a leaf in a decision tree"""
     def __init__(self, value, depth=None):
         """Initialize a leaf node"""
         super().__init__()
@@ -41,6 +43,7 @@ class Leaf(Node):
 
 
 class Decision_Tree():
+    """Class that represents a decision tree"""
     def __init__(self,
                  max_depth=10,
                  min_pop=1,

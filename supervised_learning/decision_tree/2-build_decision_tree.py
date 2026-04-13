@@ -50,7 +50,7 @@ class Node:
         lines = text.split("\n")
         new_text = "    +--" + lines[0] + "\n"
         for x in lines[1:]:
-            new_text += ("       " + x) + "\n"
+            new_text += ("           " + x) + "\n"
         return new_text
 
     def __str__(self):

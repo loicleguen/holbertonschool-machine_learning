@@ -6,6 +6,7 @@ Decision_Tree = __import__('8-build_decision_tree').Decision_Tree
 
 
 class Random_Forest():
+    """Random Forest Classifier"""
     def __init__(self, n_trees=100, max_depth=10, min_pop=1, seed=0):
         self.numpy_predicts = []
         self.target = None
@@ -16,7 +17,7 @@ class Random_Forest():
         self.seed = seed
 
     def predict(self, explanatory):
-
+        """Predicts the target for each example in explanatory"""
         # Initialize an empty list to store predictions from individual trees
         predictions = []
 
@@ -34,6 +35,7 @@ class Random_Forest():
             arr=predictions)
 
     def fit(self, explanatory, target, n_trees=100, verbose=0):
+        """Builds the Random Forest Classifier"""
         self.target = target
         self.explanatory = explanatory
         self.numpy_preds = []
@@ -60,5 +62,6 @@ class Random_Forest():
                                         self.explanatory, self.target)}""")
 
     def accuracy(self, test_explanatory, test_target):
+        """Calculates the accuracy of the model on test data"""
         return np.sum(np.equal(self.predict(
             test_explanatory), test_target)) / test_target.size

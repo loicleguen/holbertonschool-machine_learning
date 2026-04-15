@@ -55,26 +55,16 @@ class Isolation_Random_Tree():
         return np.min(arr), np.max(arr)
 
     def random_split_criterion(self, node):
-        """Choose a random feature and threshold"""
+        """Method that returns a random feature
+        and threshold for splitting a node"""
         diff = 0
-        attempts = 0
-        max_attempts = 10  # Limite pour éviter boucle infinie
-
-        while diff == 0 and attempts < max_attempts:
+        while diff == 0:
             feature = self.rng.integers(0, self.explanatory.shape[1])
             feature_min, feature_max = self.np_extrema(
                 self.explanatory[:, feature][node.sub_population])
             diff = feature_max - feature_min
-            attempts += 1
-
-        # Si on n'a pas trouvé de feature avec variation,
-        # retourner quand même quelque chose
-        if diff == 0:
-            threshold = feature_min
-        else:
-            x = self.rng.uniform()
-            threshold = (1 - x) * feature_min + x * feature_max
-
+        x = self.rng.uniform()
+        threshold = (1 - x)*feature_min + x * feature_max
         return feature, threshold
 
     def get_leaf_child(self, node, sub_population):
@@ -101,8 +91,8 @@ class Isolation_Random_Tree():
              self.explanatory[:, node.feature] <= node.threshold)
 
         # Is left node a leaf ?
-        is_left_leaf = (np.sum(left_population) < self.min_pop) or (
-            node.depth + 1 == self.max_depth)
+        is_left_leaf = (np.sum(left_population) <= 1) or (
+            node.depth >= self.max_depth - 1)
 
         if is_left_leaf:
             node.left_child = self.get_leaf_child(node, left_population)
@@ -111,8 +101,8 @@ class Isolation_Random_Tree():
             self.fit_node(node.left_child)
 
         # Is right node a leaf ?
-        is_right_leaf = (np.sum(right_population) < self.min_pop) or (
-            node.depth + 1 >= self.max_depth)
+        is_right_leaf = (np.sum(right_population) <= 1) or (
+            node.depth >= self.max_depth - 1)
 
         if is_right_leaf:
             node.right_child = self.get_leaf_child(node, right_population)

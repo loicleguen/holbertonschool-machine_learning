@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+"""Module that contains the class Isolation_Random_Tree"""
 import numpy as np
 Node = __import__('8-build_decision_tree').Node
 Leaf = __import__('8-build_decision_tree').Leaf

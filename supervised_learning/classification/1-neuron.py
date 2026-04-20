@@ -21,12 +21,12 @@ class Neuron:
     def W(self):
         """Getter method for the weights vector W"""
         return self.__W
-    
+
     @property
     def b(self):
         """Getter method for the bias b"""
         return self.__b
-    
+
     @property
     def A(self):
         """Getter method for the activated output A"""

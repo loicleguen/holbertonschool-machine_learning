@@ -105,6 +105,16 @@ class Neuron:
                     costs.append(cost)
                     steps_list.append(i)
 
+        # Always print/record the last iteration if not already done
+        if iterations % step != 0:
+            A = self.forward_prop(X)
+            cost = self.cost(Y, A)
+            if verbose:
+                print("Cost after {} iterations: {}".format(iterations, cost))
+            if graph:
+                costs.append(cost)
+                steps_list.append(iterations)
+
         # Graph the training data
         if graph:
             plt.figure()

@@ -74,7 +74,7 @@ class Neuron:
         if alpha <= 0:
             raise ValueError("alpha must be positive")
         if verbose or graph:
-            if not isinstance(step, int):
+            if not isinstance(step, int) or isinstance(step, bool):
                 raise TypeError("step must be an integer")
             if step <= 0 or step > iterations:
                 raise ValueError("step must be positive and <= iterations")

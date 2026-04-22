@@ -83,17 +83,14 @@ class NeuralNetwork:
         """Calculates one pass of gradient descent on the neural network"""
         m = Y.shape[1]
 
-        # Backpropagation for output layer
         dZ2 = A2 - Y
         dW2 = (1 / m) * np.matmul(dZ2, A1.T)
         db2 = (1 / m) * np.sum(dZ2, axis=1, keepdims=True)
 
-        # Backpropagation for hidden layer
         dZ1 = np.matmul(self.__W2.T, dZ2) * (A1 * (1 - A1))
         dW1 = (1 / m) * np.matmul(dZ1, X.T)
         db1 = (1 / m) * np.sum(dZ1, axis=1, keepdims=True)
 
-        # Update weights and biases
         self.__W2 -= alpha * dW2
         self.__b2 -= alpha * db2
         self.__W1 -= alpha * dW1

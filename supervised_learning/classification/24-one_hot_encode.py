@@ -4,6 +4,7 @@ import numpy as np
 
 
 def one_hot_encode(Y, classes):
+    """Converts a numeric label vector into a one-hot matrix"""
     try:
         if not isinstance(Y, np.ndarray) or Y.ndim != 1:
             return None

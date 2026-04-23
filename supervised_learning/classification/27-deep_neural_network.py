@@ -153,7 +153,7 @@ class DeepNeuralNetwork:
                     costs.append(cost)
                     steps_list.append(i)
 
-        if iterations % step != 0:
+        if (iterations - 1) % step != 0:
             A, cache = self.forward_prop(X)
             cost = self.cost(Y, A)
             if verbose:

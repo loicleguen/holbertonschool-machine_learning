@@ -140,7 +140,7 @@ class DeepNeuralNetwork:
             costs.append(cost)
             steps_list.append(0)
 
-        for i in range(1, iterations + 1):
+        for i in range(1, iterations):
             A, cache = self.forward_prop(X)
             self.gradient_descent(Y, cache, alpha)
 

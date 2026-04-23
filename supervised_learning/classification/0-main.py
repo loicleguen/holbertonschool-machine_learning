@@ -11,18 +11,15 @@ Y_train = lib['Y_train']
 X_train = X_train_3D.reshape((X_train_3D.shape[0], -1)).T
 Y_train_one_hot = one_hot_encode(Y_train, 10)
 
-np.random.seed(0)
+# Crée un nouveau modèle (poids aléatoires)
 deep = Deep(784, [128, 64, 10])
 
-# Affiche matrice de zéros en premier (placeholder)
+# Affiche zéros placeholder
 print(np.zeros((10, X_train.shape[1])))
 
-# Puis évalue
 A, cost = deep.evaluate(X_train, Y_train_one_hot)
 print(cost)
 print(deep.L)
-
-# Affiche les activations et poids
 for i in range(deep.L + 1):
     if i == 0:
         print("A{}".format(i), deep.cache.get("A{}".format(i)))

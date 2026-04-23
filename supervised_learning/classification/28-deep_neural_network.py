@@ -92,13 +92,14 @@ class DeepNeuralNetwork:
     def cost(self, Y, A):
         """Calculates the cost of the model using logistic regression"""
         m = Y.shape[1]
-        cost = -np.sum(Y * np.log(A)) / m
+        cost = -np.sum(Y * np.log(A + 1e-8)) / m
         return cost
 
     def evaluate(self, X, Y):
         """Evaluates the neural network’s predictions"""
         A, _ = self.forward_prop(X)
-        predictions = A
+        predictions = np.zeros_like(A)
+        predictions[np.argmax(A, axis=0), np.arange(A.shape[1])] = 1
         cost = self.cost(Y, A)
         return predictions, cost
 
@@ -154,7 +155,7 @@ class DeepNeuralNetwork:
             costs.append(cost)
             steps_list.append(0)
 
-        for i in range(1, iterations):
+        for i in range(1, iterations + 1):
             A, cache = self.forward_prop(X)
             self.gradient_descent(Y, cache, alpha)
 
@@ -167,12 +168,12 @@ class DeepNeuralNetwork:
                     costs.append(cost)
                     steps_list.append(i)
 
-        if (iterations) % step != 0:
+        if iterations % step != 0:
             A, cache = self.forward_prop(X)
             cost = self.cost(Y, A)
             if verbose:
                 print("Cost after {} iterations: {}".format(
-                    iterations - 1, cost))
+                    iterations, cost))
             if graph:
                 costs.append(cost)
                 steps_list.append(iterations)

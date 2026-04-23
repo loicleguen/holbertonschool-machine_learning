@@ -157,7 +157,8 @@ class DeepNeuralNetwork:
             A, cache = self.forward_prop(X)
             cost = self.cost(Y, A)
             if verbose:
-                print("Cost after {} iterations: {}".format(iterations, cost))
+                print("Cost after {} iterations: {}".format(
+                    iterations - 1, cost))
             if graph:
                 costs.append(cost)
                 steps_list.append(iterations)

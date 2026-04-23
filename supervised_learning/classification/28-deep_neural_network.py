@@ -103,25 +103,25 @@ class DeepNeuralNetwork:
         cost = self.cost(Y, A)
         return predictions, cost
 
-    def gradient_descent(self, Y, cache, alpha=0.05):
+    def gradient_descent(self, Y, alpha=0.05):
         """Calculates one pass of gradient descent on the neural network"""
         m = Y.shape[1]
-        dZ = cache["A{}".format(self.__L)] - Y
+        dZ = self.__cache["A{}".format(self.__L)] - Y
 
         for i in range(self.__L, 0, -1):
             w_key = "W{}".format(i)
             b_key = "b{}".format(i)
             A_prev_key = "A{}".format(i - 1)
 
-            dW = np.matmul(dZ, cache[A_prev_key].T) / m
+            dW = np.matmul(dZ, self.__cache[A_prev_key].T) / m
             db = np.sum(dZ, axis=1, keepdims=True) / m
 
             if i > 1:
                 dA = np.matmul(self.__weights[w_key].T, dZ)
                 if self.__activation == 'sig':
-                    dZ = dA * (cache[A_prev_key] * (1 - cache[A_prev_key]))
+                    dZ = dA * (self.__cache[A_prev_key] * (1 - self.__cache[A_prev_key]))
                 else:  # tanh
-                    dZ = dA * (1 - cache[A_prev_key] ** 2)
+                    dZ = dA * (1 - self.__cache[A_prev_key] ** 2)
 
             self.__weights[w_key] -= alpha * dW
             self.__weights[b_key] -= alpha * db
@@ -157,7 +157,7 @@ class DeepNeuralNetwork:
 
         for i in range(1, iterations + 1):
             A, cache = self.forward_prop(X)
-            self.gradient_descent(Y, cache, alpha)
+            self.gradient_descent(Y, alpha)
 
             if i % step == 0:
                 A, cache = self.forward_prop(X)

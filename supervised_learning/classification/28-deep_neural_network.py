@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Defines a deep neural network performing binary classification"""
+"""Defines a deep neural network performing multiclass classification"""
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
 
 class DeepNeuralNetwork:
-    """Deep Neural Network performing binary classification"""
+    """Deep Neural Network performing multiclass classification"""
 
     def __init__(self, nx, layers, activation='sig'):
         """Constructor method for DeepNeuralNetwork class"""
@@ -81,10 +81,10 @@ class DeepNeuralNetwork:
                 self._DeepNeuralNetwork__cache[a_key] = (
                     e_z / np.sum(e_z, axis=0, keepdims=True))
             else:
+                # Sigmoid activation for hidden layers
                 if self.__activation == 'sig':
-                    self._DeepNeuralNetwork__cache[a_key] = 1 / (
-                        1 + np.exp(-z))
-                else:  # tanh
+                    self._DeepNeuralNetwork__cache[a_key] = 1 / (1 + np.exp(-z))
+                else:
                     self._DeepNeuralNetwork__cache[a_key] = np.tanh(z)
         return (self._DeepNeuralNetwork__cache[a_key],
                 self._DeepNeuralNetwork__cache)
@@ -92,7 +92,7 @@ class DeepNeuralNetwork:
     def cost(self, Y, A):
         """Calculates the cost of the model using logistic regression"""
         m = Y.shape[1]
-        cost = -np.sum(Y * np.log(A + 1e-8)) / m
+        cost = -np.sum(Y * np.log(A)) / m
         return cost
 
     def evaluate(self, X, Y):
@@ -103,25 +103,25 @@ class DeepNeuralNetwork:
         cost = self.cost(Y, A)
         return predictions, cost
 
-    def gradient_descent(self, Y, alpha=0.05):
+    def gradient_descent(self, Y, cache, alpha=0.05):
         """Calculates one pass of gradient descent on the neural network"""
         m = Y.shape[1]
-        dZ = self.__cache["A{}".format(self.__L)] - Y
+        dZ = cache["A{}".format(self.__L)] - Y
 
         for i in range(self.__L, 0, -1):
             w_key = "W{}".format(i)
             b_key = "b{}".format(i)
             A_prev_key = "A{}".format(i - 1)
 
-            dW = np.matmul(dZ, self.__cache[A_prev_key].T) / m
+            dW = np.matmul(dZ, cache[A_prev_key].T) / m
             db = np.sum(dZ, axis=1, keepdims=True) / m
 
             if i > 1:
                 dA = np.matmul(self.__weights[w_key].T, dZ)
                 if self.__activation == 'sig':
-                    dZ = dA * (self.__cache[A_prev_key] * (1 - self.__cache[A_prev_key]))
-                else:  # tanh
-                    dZ = dA * (1 - self.__cache[A_prev_key] ** 2)
+                    dZ = dA * (cache[A_prev_key] * (1 - cache[A_prev_key]))
+                else:
+                    dZ = dA * (1 - cache[A_prev_key] ** 2)
 
             self.__weights[w_key] -= alpha * dW
             self.__weights[b_key] -= alpha * db
@@ -157,7 +157,7 @@ class DeepNeuralNetwork:
 
         for i in range(1, iterations + 1):
             A, cache = self.forward_prop(X)
-            self.gradient_descent(Y, alpha)
+            self.gradient_descent(Y, cache, alpha)
 
             if i % step == 0:
                 A, cache = self.forward_prop(X)
@@ -173,7 +173,7 @@ class DeepNeuralNetwork:
             cost = self.cost(Y, A)
             if verbose:
                 print("Cost after {} iterations: {}".format(
-                    iterations, cost))
+                    iterations - 1, cost))
             if graph:
                 costs.append(cost)
                 steps_list.append(iterations)

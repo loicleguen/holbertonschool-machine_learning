@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Defines a deep neural network performing binary classification"""
+"""Defines a deep neural network performing multiclass classification"""
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 
 
 class DeepNeuralNetwork:
-    """Deep Neural Network performing binary classification"""
+    """Deep Neural Network performing multiclass classification"""
 
     def __init__(self, nx, layers):
         """Constructor method for DeepNeuralNetwork class"""
@@ -87,7 +87,8 @@ class DeepNeuralNetwork:
     def evaluate(self, X, Y):
         """Evaluates the neural network’s predictions"""
         A, _ = self.forward_prop(X)
-        predictions = A
+        predictions = np.zeros_like(A)
+        predictions[np.argmax(A, axis=0), np.arange(A.shape[1])] = 1
         cost = self.cost(Y, A)
         return predictions, cost
 
@@ -140,7 +141,7 @@ class DeepNeuralNetwork:
             costs.append(cost)
             steps_list.append(0)
 
-        for i in range(1, iterations):
+        for i in range(1, iterations + 1):
             A, cache = self.forward_prop(X)
             self.gradient_descent(Y, cache, alpha)
 

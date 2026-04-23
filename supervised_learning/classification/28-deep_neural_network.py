@@ -83,7 +83,8 @@ class DeepNeuralNetwork:
             else:
                 # Sigmoid activation for hidden layers
                 if self.__activation == 'sig':
-                    self._DeepNeuralNetwork__cache[a_key] = 1 / (1 + np.exp(-z))
+                    self._DeepNeuralNetwork__cache[a_key] = 1 / (
+                        1 + np.exp(-z))
                 else:
                     self._DeepNeuralNetwork__cache[a_key] = np.tanh(z)
         return (self._DeepNeuralNetwork__cache[a_key],

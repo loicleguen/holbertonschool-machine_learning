@@ -3,7 +3,7 @@
 import tensorflow.keras as K
 
 
-def build_model(nx, layers, activations, lambtha, kepp_prob):
+def build_model(nx, layers, activations, lambtha, keep_prob):
     """Builds a neural network with the Keras Sequential API"""
     model = K.Sequential()
     for i in range(len(layers)):
@@ -15,5 +15,5 @@ def build_model(nx, layers, activations, lambtha, kepp_prob):
         ))
 
         if i != len(layers) - 1:
-            model.add(K.layers.Dropout(1 - kepp_prob))
+            model.add(K.layers.Dropout(1 - keep_prob))
     return model

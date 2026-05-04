@@ -12,7 +12,7 @@ def create_batch_norm_layer(prev, n, activation):
         use_bias=False
     )(prev)
     batch_norm = tf.keras.layers.BatchNormalization(
-        axis=-1,
+        axis=1,
         momentum=0.99,
         epsilon=1e-7,
         center=True,

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Calculates the moving average of a data set"""
+
 
 def moving_average(data, beta):
     """Calculates the moving average of a data set"""

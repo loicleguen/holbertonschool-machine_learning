@@ -5,12 +5,6 @@ import numpy as np
 
 def create_confusion_matrix(labels, logits):
     """Create a confusion matrix."""
-    if (not isinstance(labels, np.ndarray)
-            or not isinstance(logits, np.ndarray)):
-        return None
-    if labels.shape != logits.shape:
-        return None
-
     _, classes = labels.shape
     confusion = np.zeros((classes, classes))
     true_idx = np.argmax(labels, axis=1)

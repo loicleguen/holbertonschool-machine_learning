@@ -23,6 +23,8 @@ def preprocess_data(X, Y):
 
 
 if __name__ == "__main__":
+    K.utils.set_random_seed(0)
+
     # Chargement du jeu de donnees CIFAR-10
     (X_train, Y_train), _ = K.datasets.cifar10.load_data()
     X_train, Y_train = preprocess_data(X_train, Y_train)
@@ -34,76 +36,78 @@ if __name__ == "__main__":
         input_shape=(224, 224, 3),
         pooling="avg",
     )
-    # On fige toutes les couches du backbone
     base_model.trainable = False
 
-    # Entrree originale en 32x32, redimensionnee pour MobileNetV2
+    # Modele complet: entree 32x32 -> redimensionnement -> backbone -> tete
     inputs = K.Input(shape=(32, 32, 3))
     x = K.layers.Resizing(224, 224)(inputs)
-
-    # MobileNetV2 attend des valeurs dans [-1, 1]
     x = K.layers.Rescaling(scale=2.0, offset=-1.0)(x)
-
-    # Extraction des features par le backbone gele
     x = base_model(x, training=False)
-    extractor = K.Model(inputs, x)
 
-    # On calcule les features une seule fois pour gagner du temps
-    features = extractor.predict(X_train, batch_size=128, verbose=1)
-
-    # Tete de classification entrainnee sur les features extraites
-    feature_input = K.Input(shape=(features.shape[1],))
-
-    # Couche dense intermediaire
     x = K.layers.Dense(
         256,
         activation="relu",
         kernel_initializer=K.initializers.he_normal(seed=0)
-    )(feature_input)
-
-    # Regularisation pour limiter le surapprentissage
+    )(x)
     x = K.layers.Dropout(0.3)(x)
-
-    # Sortie finale pour les 10 classes de CIFAR-10
     outputs = K.layers.Dense(
         10,
         activation="softmax",
         kernel_initializer=K.initializers.he_normal(seed=0)
     )(x)
 
-    model = K.Model(feature_input, outputs)
+    model = K.Model(inputs, outputs)
 
-    # Compilation du modele
+    # Phase 1: entrainement de la tete seulement
     model.compile(
         optimizer=K.optimizers.Adam(),
         loss="categorical_crossentropy",
         metrics=["accuracy"]
     )
 
-    # Entrainement de la tete de classification
+    callbacks = [
+        K.callbacks.EarlyStopping(
+            monitor="val_accuracy",
+            patience=2,
+            restore_best_weights=True
+        )
+    ]
+
     model.fit(
-        features,
+        X_train,
         Y_train,
         batch_size=128,
-        epochs=15,
+        epochs=10,
         validation_split=0.1,
+        callbacks=callbacks,
         verbose=1
     )
 
-    # Reconstruction du modele complet pour la sauvegarde
-    full_inputs = K.Input(shape=(32, 32, 3))
-    full_x = K.layers.Resizing(224, 224)(full_inputs)
-    full_x = K.layers.Rescaling(scale=2.0, offset=-1.0)(full_x)
-    full_x = base_model(full_x, training=False)
-    full_outputs = model(full_x)
-    full_model = K.Model(full_inputs, full_outputs)
+    # Phase 2: fine-tuning leger des dernieres couches du backbone
+    base_model.trainable = True
 
-    # Compilation finale avant sauvegarde
-    full_model.compile(
-        optimizer=K.optimizers.Adam(),
+    for layer in base_model.layers[:-20]:
+        layer.trainable = False
+
+    for layer in base_model.layers[-20:]:
+        if isinstance(layer, K.layers.BatchNormalization):
+            layer.trainable = False
+
+    model.compile(
+        optimizer=K.optimizers.Adam(1e-5),
         loss="categorical_crossentropy",
         metrics=["accuracy"]
     )
 
-    # Sauvegarde du modele final attendu par 0-main.py
-    full_model.save("cifar10.h5")
+    model.fit(
+        X_train,
+        Y_train,
+        batch_size=128,
+        epochs=5,
+        validation_split=0.1,
+        callbacks=callbacks,
+        verbose=1
+    )
+
+    # Sauvegarde du modele final
+    model.save("cifar10.h5")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Module Yolo - tâche 3 : non_max_suppression."""
+"""Module Yolo - tâche 5 : preprocess_images."""
 
 import tensorflow as tf
 import numpy as np
@@ -136,7 +136,9 @@ class Yolo:
     @staticmethod
     def load_images(folder_path):
         """Charge toutes les images d'un dossier."""
-        image_paths = glob(folder_path + '/*')
+        image_paths = (glob(folder_path + '/*.jpg') +
+                       glob(folder_path + '/*.jpeg') +
+                       glob(folder_path + '/*.png'))
         images = [cv2.imread(path) for path in image_paths]
 
         return images, image_paths

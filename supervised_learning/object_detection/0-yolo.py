@@ -41,20 +41,10 @@ class Yolo:
             - cast `class_t` et `nms_t` en float
             - convertit `anchors` en `numpy.ndarray`
         """
-        # Charger le modèle Keras sauvegardé (Darknet -> Keras)
-        # Avertissement courant: "No training
-        # configuration found..." est normal
+
         self.model = tf.keras.models.load_model(model_path)
-
-        # Lire les noms de classes depuis le fichier (une ligne = une classe)
         with open(classes_path, 'r') as f:
-            # strip() retire \n et les lignes vides sont ignorées
             self.class_names = [line.strip() for line in f if line.strip()]
-
-        # Seuils pour filtrage et NMS (s'assurer que ce sont des float)
         self.class_t = float(class_t)
         self.nms_t = float(nms_t)
-
-        # Stocker les ancres sous forme de
-        # numpy.ndarray (utilisation ultérieure)
         self.anchors = np.array(anchors)

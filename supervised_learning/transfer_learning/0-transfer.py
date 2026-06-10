@@ -1,113 +1,97 @@
 #!/usr/bin/env python3
-"""Transfer learning for CIFAR-10 using a Keras application."""
+"""Transfer Learning on CIFAR-10 using MobileNetV2."""
+
 from tensorflow import keras as K
+
+# Active la désérialisation des Lambda layers si la version de Keras le permet.
+# Si l'attribut n'existe pas, on ignore l'erreur.
+try:
+    K.config.enable_unsafe_deserialization()
+except AttributeError:
+    pass
 
 
 def preprocess_data(X, Y):
-    """Pre-process CIFAR-10 data for the model.
+    """Pre-processes the data for the model.
 
     Args:
-        X: images CIFAR-10 de forme (m, 32, 32, 3)
-        Y: labels CIFAR-10 de forme (m,)
+        X: numpy.ndarray of shape (m, 32, 32, 3) containing CIFAR-10 data
+        Y: numpy.ndarray of shape (m,) containing CIFAR-10 labels
 
     Returns:
-        X_p: images normalisees
-        Y_p: labels en one-hot
+        X_p: numpy.ndarray containing the preprocessed X
+        Y_p: numpy.ndarray containing the preprocessed Y
     """
-    # On ramene les pixels dans l'intervalle [0, 1]
-    X_p = X.astype("float32") / 255.0
+    # Normalise les pixels selon ce que MobileNetV2 attend
+    X_p = K.applications.mobilenet_v2.preprocess_input(X)
 
-    # On transforme les labels entiers en vecteurs one-hot
-    Y_p = K.utils.to_categorical(Y.reshape(-1), 10)
+    # Transforme les labels en one-hot
+    Y_p = K.utils.to_categorical(Y, 10)
     return X_p, Y_p
 
 
 if __name__ == "__main__":
-    K.utils.set_random_seed(0)
-
-    # Chargement du jeu de donnees CIFAR-10
-    (X_train, Y_train), _ = K.datasets.cifar10.load_data()
+    # Chargement des données CIFAR-10
+    (X_train, Y_train), (X_test, Y_test) = K.datasets.cifar10.load_data()
     X_train, Y_train = preprocess_data(X_train, Y_train)
+    X_test, Y_test = preprocess_data(X_test, Y_test)
 
-    # Backbone pre-entraine sur ImageNet
+    # Modèle pré-entraîné sur ImageNet
     base_model = K.applications.MobileNetV2(
-        include_top=False,
         weights="imagenet",
-        input_shape=(224, 224, 3),
-        pooling="avg",
+        include_top=False,
+        input_shape=(96, 96, 3),
+        pooling="avg"
     )
     base_model.trainable = False
 
-    # Modele complet: entree 32x32 -> redimensionnement -> backbone -> tete
+    # Extraction des features une seule fois
     inputs = K.Input(shape=(32, 32, 3))
-    x = K.layers.Resizing(224, 224)(inputs)
-    x = K.layers.Rescaling(scale=2.0, offset=-1.0)(x)
+    x = K.layers.Resizing(96, 96)(inputs)
     x = base_model(x, training=False)
+    extractor = K.Model(inputs, x)
 
-    x = K.layers.Dense(
-        256,
-        activation="relu",
-        kernel_initializer=K.initializers.he_normal(seed=0)
-    )(x)
+    X_train_features = extractor.predict(X_train, batch_size=64, verbose=1)
+    X_test_features = extractor.predict(X_test, batch_size=64, verbose=1)
+
+    # Classifieur sur les features extraites
+    feature_input = K.Input(shape=X_train_features.shape[1:])
+    x = K.layers.Dense(256, activation="relu")(feature_input)
     x = K.layers.Dropout(0.3)(x)
-    outputs = K.layers.Dense(
-        10,
-        activation="softmax",
-        kernel_initializer=K.initializers.he_normal(seed=0)
-    )(x)
-
-    model = K.Model(inputs, outputs)
-
-    # Phase 1: entrainement de la tete seulement
-    model.compile(
-        optimizer=K.optimizers.Adam(),
-        loss="categorical_crossentropy",
-        metrics=["accuracy"]
-    )
-
-    callbacks = [
-        K.callbacks.EarlyStopping(
-            monitor="val_accuracy",
-            patience=2,
-            restore_best_weights=True
-        )
-    ]
-
-    model.fit(
-        X_train,
-        Y_train,
-        batch_size=128,
-        epochs=10,
-        validation_split=0.1,
-        callbacks=callbacks,
-        verbose=1
-    )
-
-    # Phase 2: fine-tuning leger des dernieres couches du backbone
-    base_model.trainable = True
-
-    for layer in base_model.layers[:-20]:
-        layer.trainable = False
-
-    for layer in base_model.layers[-20:]:
-        if isinstance(layer, K.layers.BatchNormalization):
-            layer.trainable = False
+    x = K.layers.Dense(10, activation="softmax")(x)
+    model = K.Model(feature_input, x)
 
     model.compile(
-        optimizer=K.optimizers.Adam(1e-5),
+        optimizer="adam",
         loss="categorical_crossentropy",
         metrics=["accuracy"]
     )
 
     model.fit(
-        X_train,
+        X_train_features,
         Y_train,
-        batch_size=128,
-        epochs=5,
-        validation_split=0.1,
-        callbacks=callbacks,
+        epochs=20,
+        validation_data=(X_test_features, Y_test),
+        callbacks=[
+            K.callbacks.EarlyStopping(
+                monitor="val_accuracy",
+                patience=5,
+                restore_best_weights=True
+            )
+        ],
         verbose=1
     )
 
-    # Sauvegarde du modele final
-    model.save("cifar10.h5")
+    # Modèle complet sauvegardé
+    full_inputs = K.Input(shape=(32, 32, 3))
+    full_x = K.layers.Resizing(96, 96)(full_inputs)
+    full_x = base_model(full_x, training=False)
+    full_outputs = model(full_x)
+    full_model = K.Model(full_inputs, full_outputs)
+
+    full_model.compile(
+        optimizer="adam",
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
+    )
+    full_model.save("cifar10.h5")

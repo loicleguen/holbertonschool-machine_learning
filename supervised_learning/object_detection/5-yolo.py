@@ -145,14 +145,14 @@ class Yolo:
 
     def preprocess_images(self, images):
         """Redimensionne et normalise les images pour le modèle."""
-        input_h = self.model.input_shape[1]
-        input_w = self.model.input_shape[2]
+        input_h = self.model.input.shape[1]
+        input_w = self.model.input.shape[2]
 
         image_shapes = np.array([[img.shape[0], img.shape[1]]
                                  for img in images])
 
         pimages = np.array([
-            cv2.resize(img, (input_w, input_h),
+            cv2.resize(img, (input_h, input_w),
                        interpolation=cv2.INTER_CUBIC) / 255.0
             for img in images
         ])

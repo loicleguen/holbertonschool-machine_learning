@@ -152,8 +152,11 @@ class Yolo:
                                  for img in images])
 
         pimages = np.array([
-            cv2.resize(img, (input_w, input_h),
-                       interpolation=cv2.INTER_CUBIC) / 255.0
+            cv2.resize(
+                cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
+                (input_w, input_h),
+                interpolation=cv2.INTER_CUBIC
+            ) / 255.0
             for img in images
         ])
 

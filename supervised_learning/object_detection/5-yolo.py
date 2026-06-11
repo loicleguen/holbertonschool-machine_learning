@@ -26,8 +26,8 @@ class Yolo:
         box_class_probs = []
 
         image_h, image_w = image_size
-        input_w = self.model.input.shape[1]
-        input_h = self.model.input.shape[2]
+        input_h = self.model.input.shape[1]
+        input_w = self.model.input.shape[2]
 
         for i, output in enumerate(outputs):
             grid_h, grid_w, nb_anchors, _ = output.shape
@@ -152,11 +152,8 @@ class Yolo:
                                  for img in images])
 
         pimages = np.array([
-            cv2.resize(
-                cv2.cvtColor(img, cv2.COLOR_BGR2RGB),
-                (input_w, input_h),
-                interpolation=cv2.INTER_CUBIC
-            ) / 255.0
+            cv2.resize(img, (input_w, input_h),
+                       interpolation=cv2.INTER_CUBIC) / 255.0
             for img in images
         ])
 

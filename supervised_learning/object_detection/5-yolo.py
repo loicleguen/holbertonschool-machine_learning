@@ -136,10 +136,17 @@ class Yolo:
     @staticmethod
     def load_images(folder_path):
         """Charge toutes les images d'un dossier."""
-        image_paths = (glob(folder_path + '/*.jpg') +
-                       glob(folder_path + '/*.jpeg') +
-                       glob(folder_path + '/*.png'))
-        images = [cv2.imread(path) for path in image_paths]
+        import os
+        image_paths = []
+        images = []
+
+        for filename in os.listdir(folder_path):
+            if filename.lower().endswith(('.jpg', '.jpeg', '.png')):
+                image_path = os.path.join(folder_path, filename)
+                image = cv2.imread(image_path)
+                if image is not None:
+                    images.append(image)
+                    image_paths.append(image_path)
 
         return images, image_paths
 

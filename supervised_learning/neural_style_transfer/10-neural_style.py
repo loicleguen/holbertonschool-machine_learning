@@ -315,8 +315,8 @@ class NST:
         """
         # Validation du rang tensoriel de l'image générée
         if not isinstance(generated_image, (tf.Tensor, tf.Variable)) or \
-           len(generated_image.shape) != 4:
-            raise TypeError("generated_image must be a tensor of rank 4")
+           len(generated_image.shape) not in [3, 4]:
+            raise TypeError("image must be a tensor of rank 3 or 4")
 
         # tf.image.total_variation calcule le
         # bruit/décalage entre pixels voisins.

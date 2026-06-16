@@ -155,27 +155,16 @@ class NST:
         """
         Extrait les caractéristiques de style et de contenu à partir
         des images cibles passées au modèle.
-
-        Remplit :
-            - self.gram_style_features : Liste de
-                matrices de Gram pour le style.
-            - self.content_feature : Tenseur d'activation pour le contenu.
         """
-        # 1. Extraction des activations pour l'image de style
-        # Le modèle renvoie : [style_out1, style_out2,
-        # ..., style_out5, content_out]
+        # 1. Extraction propre des activations via le modèle
         style_outputs = self.model(self.style_image)
-
-        # On ne garde que les sorties liées au style (les 5 premières)
-        style_layers_outputs = style_outputs[:-1]
-
-        # On calcule la matrice de Gram pour chaque couche de style extraite
-        self.gram_style_features = [
-            self.gram_matrix(layer) for layer in style_layers_outputs
-        ]
-
-        # 2. Extraction des activations pour l'image de contenu
         content_outputs = self.model(self.content_image)
 
-        # On ne récupère que le dernier élément (la couche de contenu)
+        # 2. Remplissage explicite de gram_style_features
+        # par rapport à style_layers
+        self.gram_style_features = []
+        for i in range(len(self.style_layers)):
+            self.gram_style_features.append(self.gram_matrix(style_outputs[i]))
+
+        # 3. Récupération stricte du dernier élément pour le contenu
         self.content_feature = content_outputs[-1]

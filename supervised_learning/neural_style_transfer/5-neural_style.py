@@ -241,29 +241,26 @@ class NST:
             tf.Tensor: Le coût de style global (scalaire).
         """
         # 1. Obtenir la longueur attendue des couches de style
-        l = len(self.style_layers)
+        num_layers = len(self.style_layers)
 
         # 2. Validation du type et de la longueur de la liste
-        if not isinstance(style_outputs, list) or len(style_outputs) != l:
+        if not isinstance(style_outputs, list) or \
+           len(style_outputs) != num_layers:
             raise TypeError(
-                f"style_outputs must be a list with a length of {l}"
+                f"style_outputs must be a list with a length of {num_layers}"
             )
 
         # 3. Initialisation du coût total de style à zéro
         total_style_cost = tf.constant(0.0, dtype=tf.float32)
 
-        # 4. Calcul de la pondération équitable (chaque poids = 1 / l)
-        weight_per_layer = 1.0 / float(l)
+        # 4. Calcul de la pondération équitable
+        weight_per_layer = 1.0 / float(num_layers)
 
         # 5. Accumulation des coûts de style de chaque couche
-        # On utilise zip pour itérer en parallèle sur les outputs générés
-        # et les matrices de Gram cibles pré-calculées.
         for style_output, gram_target in zip(
             style_outputs, self.gram_style_features
         ):
-            # Calcul du coût unitaire de la couche
             layer_cost = self.layer_style_cost(style_output, gram_target)
-            # Ajout pondéré au coût total
             total_style_cost += weight_per_layer * layer_cost
 
         return total_style_cost

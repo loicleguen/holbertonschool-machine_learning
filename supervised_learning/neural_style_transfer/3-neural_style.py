@@ -156,15 +156,23 @@ class NST:
         Extrait les caractéristiques de style et de contenu à partir
         des images cibles passées au modèle.
         """
-        # 1. Extraction propre des activations via le modèle
-        style_outputs = self.model(self.style_image)
-        content_outputs = self.model(self.content_image)
+        # 1. Remettre à l'échelle [0, 255] et appliquer le prétraitement VGG19
+        preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
+            self.style_image * 255.0
+        )
+        preprocessed_content = tf.keras.applications.vgg19.preprocess_input(
+            self.content_image * 255.0
+        )
 
-        # 2. Remplissage explicite de gram_style_features
-        # par rapport à style_layers
-        self.gram_style_features = []
-        for i in range(len(self.style_layers)):
-            self.gram_style_features.append(self.gram_matrix(style_outputs[i]))
+        # 2. Extraction des activations via le modèle
+        style_outputs = self.model(preprocessed_style)
+        content_outputs = self.model(preprocessed_content)
 
-        # 3. Récupération stricte du dernier élément pour le contenu
+        # 3. Extraction par slicing
+        style_layers_outputs = style_outputs[:-1]
+        self.gram_style_features = [
+            self.gram_matrix(layer) for layer in style_layers_outputs
+        ]
+
+        # 4. Récupération de la couche de contenu
         self.content_feature = content_outputs[-1]

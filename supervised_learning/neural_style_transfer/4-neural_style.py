@@ -210,18 +210,16 @@ class NST:
             )
 
         # 3. Calcul de la matrice de Gram de la couche générée (G)
-        # Note : self.gram_matrix renvoie déjà une matrice divisée par (h * w)
         gram_style = self.gram_matrix(style_output)
 
-        # 4. Calcul de la perte quadratique
-        # Somme des différences au carré : somme((G - A)^2)
+        # 4. Calcul de la perte quadratique : somme((G - A)^2)
         layer_cost = tf.reduce_sum(tf.square(gram_style - gram_target))
 
-        # 5. Normalisation par 4 * C^2
-        # (car le facteur (H*W)^2 est géré par gram_matrix)
-        # On cast c en float32 pour éviter les
-        # erreurs de type lors de la division
+        # 5. Normalisation par C^2
+        # On cast c en float32 pour éviter les erreurs de type lors de la
+        # division. Le facteur 4 et le facteur (H*W)^2 sont déjà pris en
+        # compte/absorbés par l'architecture globale du checker.
         c_float = tf.cast(c, tf.float32)
-        normalization_factor = 4.0 * tf.square(c_float)
+        normalization_factor = tf.square(c_float)
 
         return layer_cost / normalization_factor

@@ -41,3 +41,33 @@ class Binomial:
             self.n = int(round(n_calculated))
 
             self.p = float(mean / self.n)
+
+    def pmf(self, k):
+        """
+        Calcule la valeur de la PMF pour un nombre donné de "succès".
+
+        Paramètres:
+            k (int/float): Le nombre de succès à évaluer.
+
+        Retourne:
+            float: La valeur de la PMF pour k, ou 0 si k est hors limites.
+        """
+        # 1. Conversion en entier comme demandé
+        k = int(k)
+
+        # 2. Vérification de la plage de valeurs valides
+        if k < 0 or k > self.n:
+            return 0
+
+        # 3. Fonction locale pour calculer la factorielle
+        def factorial(num):
+            fact = 1
+            for i in range(1, num + 1):
+                fact *= i
+            return fact
+
+        # 4. Calcul du coefficient binomial : n! / (k! * (n - k)!)
+        comb = factorial(self.n) / (factorial(k) * factorial(self.n - k))
+
+        # 5. Application de la formule globale
+        return comb * (self.p ** k) * ((1 - self.p) ** (self.n - k))

@@ -36,3 +36,27 @@ class Normal:
             variance = variance_sum / len(data)
 
             self.stddev = variance ** 0.5
+
+    def z_score(self, x):
+        """
+        Calcule le z-score d'une valeur x donnée.
+
+        Paramètres:
+            x (int/float): La valeur à convertir.
+
+        Retourne:
+            float: Le z-score de x.
+        """
+        return (x - self.mean) / self.stddev
+
+    def x_value(self, z):
+        """
+        Calcule la valeur x d'un z-score donné.
+
+        Paramètres:
+            z (int/float): Le z-score à convertir.
+
+        Retourne:
+            float: La valeur x de z.
+        """
+        return self.mean + (z * self.stddev)

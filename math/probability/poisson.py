@@ -49,3 +49,21 @@ class Poisson:
             fact *= i
         pmf = (e ** -self.lambtha) * (self.lambtha ** k) / fact
         return pmf
+
+    def cdf(self, k):
+        """
+        Calcule la valeur de la CDF pour un nombre donné de "succès".
+
+        Paramètres:
+            k (int/float): Le nombre de succès à évaluer.
+
+        Retourne:
+            float: La valeur de la CDF pour k, ou 0 si k est hors limites.
+        """
+        k = int(k)
+        if k < 0:
+            return 0
+        totproba = 0.0
+        for i in range(k + 1):
+            totproba += self.pmf(i)
+        return totproba

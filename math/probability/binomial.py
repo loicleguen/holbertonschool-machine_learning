@@ -71,3 +71,28 @@ class Binomial:
 
         # 5. Application de la formule globale
         return comb * (self.p ** k) * ((1 - self.p) ** (self.n - k))
+
+    def cdf(self, k):
+        """
+        Calcule la valeur de la CDF pour un nombre donné de "succès".
+
+        Paramètres:
+            k (int/float): Le nombre de succès à évaluer.
+
+        Retourne:
+            float: La valeur de la CDF pour k, ou 0 si k est hors limites.
+        """
+        k = int(k)
+
+        if k < 0:
+            return 0
+
+        if k >= self.n:
+            return 1.0
+
+        # Somme des PMF de 0 à k inclus
+        total_probability = 0.0
+        for i in range(k + 1):
+            total_probability += self.pmf(i)
+
+        return total_probability

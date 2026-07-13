@@ -52,7 +52,7 @@ def posterior(x, n, p1, p2):
     b = n - x + 1
 
     # Calcul des CDFs en utilisant la fonction beta incomplète régularisée
-    cdf_p2 = special.btainc(a, b, p2)
-    cdf_p1 = special.btainc(a, b, p1)
+    cdf_p2 = special.betainc(a, b, p2)
+    cdf_p1 = special.betainc(a, b, p1)
 
     return cdf_p2 - cdf_p1

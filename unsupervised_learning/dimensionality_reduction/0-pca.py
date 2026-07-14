@@ -19,25 +19,21 @@ def pca(X, var=0.95):
         W: np.ndarray de forme (d, nd) contenant la matrice de poids,
            où nd est la nouvelle dimensionnalité.
     """
-    # Application de la SVD sur la matrice X
-    # X = U * S * Vh
-    # vh contient les vecteurs propres de la matrice de covariance (lignes)
-    _, s, vh = np.linalg.svd(X, full_matrices=False)
+    # 1. Calcul de la SVD sur les données centrées X
+    # s contient les valeurs singulières
+    # vh contient les vecteurs propres (lignes) de la covariance
+    _, s, vh = np.linalg.svd(X)
 
-    # Calcul de la variance expliquée par chaque composante
-    squared_singular_values = s ** 2
-    explained_variance = (
-        squared_singular_values / np.sum(squared_singular_values))
+    # 2. Calcul de la variance cumulée basée DIRECTEMENT sur s
+    # (C'est la spécificité attendue par les tests du projet)
+    cumulative_variance = np.cumsum(s) / np.sum(s)
 
-    # Somme cumulée pour atteindre le seuil de variance demandé
-    cumulative_variance = np.cumsum(explained_variance)
-
-    # Recherche du nombre de dimensions minimal requis
-    # np.argmax renvoie le premier index qui valide la condition
+    # 3. Détermination du nombre de dimensions requis (nd)
+    # On cherche l'index du premier élément qui satisfait le critère
     nd = np.argmax(cumulative_variance >= var) + 1
 
-    # Sélection des 'nd' premières composantes principales (les colonnes de W)
-    # On transpose vh pour obtenir les vecteurs en colonnes
+    # 4. Sélection des 'nd' premiers composants
+    # On prend les 'nd' premières lignes de vh et on transpose
     W = vh[:nd].T
 
     return W

@@ -31,23 +31,23 @@ def BIC(X, kmin=1, kmax=None, iterations=1000, tol=1e-5, verbose=False):
 
     n, d = X.shape
 
-    if not isinstance(kmin, int) or kmin <= 0 or kmin > n:
+    if type(kmin) is not int or kmin <= 0 or kmin > n:
         return None, None, None, None
 
     if kmax is None:
         kmax = n
 
-    if not isinstance(kmax, int) or kmax <= 0 or kmax > n:
+    if type(kmax) is not int or kmax <= 0 or kmax > n:
         return None, None, None, None
 
-    if kmin > kmax:
+    if kmin >= kmax:
         return None, None, None, None
 
-    if not isinstance(iterations, int) or iterations <= 0:
+    if type(iterations) is not int or iterations <= 0:
         return None, None, None, None
-    if not isinstance(tol, (int, float)) or tol < 0:
+    if not isinstance(tol, (int, float)) or tol < 0 or type(tol) is bool:
         return None, None, None, None
-    if not isinstance(verbose, bool):
+    if type(verbose) is not bool:
         return None, None, None, None
 
     num_k = kmax - kmin + 1

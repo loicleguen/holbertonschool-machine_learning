@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Module traitant de l'initialisation d'un processus gaussien 1D sans bruit.
+Module traitant du calcul de la moyenne et de la variance
+des prédictions dans un processus gaussien 1D sans bruit.
 """
 import numpy as np
 

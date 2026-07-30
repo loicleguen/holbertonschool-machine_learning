@@ -1,0 +1,12 @@
+=========================================
+   Bayesian Optimization Final Report
+=========================================
+
+Best Target Loss (val_loss): 0.042186
+
+Optimized Hyperparameters:
+  - Learning Rate : 0.008181
+  - Hidden Units  : 32
+  - Dropout Rate  : 0.4872
+  - L2 Weight     : 0.000100
+  - Batch Size    : 64

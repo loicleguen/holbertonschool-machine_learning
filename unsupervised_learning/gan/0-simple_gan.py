@@ -41,17 +41,14 @@ class Simple_GAN(keras.Model):
 
         # Define the generator loss and optimizer
         self.generator.loss = lambda x: tf.keras.losses.MeanSquaredError()(
-            x, tf.ones(x.shape)
-        )
+            x, tf.ones(x.shape))
         self.generator.optimizer = keras.optimizers.Adam(
             learning_rate=self.learning_rate,
             beta_1=self.beta_1,
-            beta_2=self.beta_2
-        )
+            beta_2=self.beta_2)
         self.generator.compile(
             optimizer=self.generator.optimizer,
-            loss=self.generator.loss
-        )
+            loss=self.generator.loss)
 
         # Define the discriminator loss and optimizer
         self.discriminator.loss = (
@@ -59,17 +56,14 @@ class Simple_GAN(keras.Model):
                 x, tf.ones(x.shape)
             ) + tf.keras.losses.MeanSquaredError()(
                 y, -1 * tf.ones(y.shape)
-            )
-        )
+            ))
         self.discriminator.optimizer = keras.optimizers.Adam(
             learning_rate=self.learning_rate,
             beta_1=self.beta_1,
-            beta_2=self.beta_2
-        )
+            beta_2=self.beta_2)
         self.discriminator.compile(
             optimizer=self.discriminator.optimizer,
-            loss=self.discriminator.loss
-        )
+            loss=self.discriminator.loss)
 
     def get_fake_sample(self, size=None, training=False):
         """
@@ -120,36 +114,28 @@ class Simple_GAN(keras.Model):
                 fake_sample = self.get_fake_sample(training=True)
 
                 real_output = self.discriminator(
-                    real_sample, training=True
-                )
+                    real_sample, training=True)
                 fake_output = self.discriminator(
-                    fake_sample, training=True
-                )
+                    fake_sample, training=True)
 
                 discr_loss = self.discriminator.loss(
-                    real_output, fake_output
-                )
+                    real_output, fake_output)
 
             grads = tape.gradient(
-                discr_loss, self.discriminator.trainable_variables
-            )
+                discr_loss, self.discriminator.trainable_variables)
             self.discriminator.optimizer.apply_gradients(
-                zip(grads, self.discriminator.trainable_variables)
-            )
+                zip(grads, self.discriminator.trainable_variables))
 
         # 2. Train the generator once
         with tf.GradientTape() as tape:
             fake_sample = self.get_fake_sample(training=True)
             fake_output = self.discriminator(
-                fake_sample, training=True
-            )
+                fake_sample, training=True)
             gen_loss = self.generator.loss(fake_output)
 
         grads = tape.gradient(
-            gen_loss, self.generator.trainable_variables
-        )
+            gen_loss, self.generator.trainable_variables)
         self.generator.optimizer.apply_gradients(
-            zip(grads, self.generator.trainable_variables)
-        )
+            zip(grads, self.generator.trainable_variables))
 
         return {"discr_loss": discr_loss, "gen_loss": gen_loss}

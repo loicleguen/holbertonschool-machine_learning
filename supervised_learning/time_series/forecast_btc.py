@@ -4,6 +4,7 @@ Builds, trains, and validates a Keras model for BTC forecasting using tf.data.
 """
 import numpy as np
 import tensorflow as tf
+import matplotlib.pyplot as plt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 
@@ -71,6 +72,26 @@ def main():
     # 4. Sauvegarde du modèle
     model.save('btc_forecast_model.h5')
     print("Entraînement terminé et modèle sauvegardé.")
+
+    # 5. Génération et sauvegarde du graphique
+    print("Génération du graphique de prédiction...")
+    Y_pred = model.predict(val_dataset)
+
+    plt.figure(figsize=(12, 6))
+    plt.plot(Y_val[:200], label='Vrai prix (Normalisé)', color='blue')
+    plt.plot(
+        Y_pred[:200],
+        label='Prédiction LSTM',
+        color='orange',
+        linestyle='--'
+    )
+    plt.title('Prédiction du cours du BTC vs Prix Réel (LSTM)')
+    plt.xlabel('Heures')
+    plt.ylabel('Prix (Normalisé)')
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig('btc_prediction_graph.png')
+    print("Graphique sauvegardé sous 'btc_prediction_graph.png'")
 
 
 if __name__ == '__main__':

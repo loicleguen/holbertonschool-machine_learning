@@ -46,4 +46,4 @@ def bag_of_words(sentences, vocab=None):
             if word in word_to_index:
                 E[i, word_to_index[word]] += 1
 
-    return E, vocab
+    return E, np.array(vocab)

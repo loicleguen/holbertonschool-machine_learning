@@ -16,35 +16,43 @@ def bag_of_words(sentences, vocab=None):
 
     Returns:
         tuple: (embeddings, features)
+            - embeddings: numpy.ndarray de forme (s, f)
+            - features: liste des features utilisées
     """
+    # Nettoyage et découpage des mots pour chaque phrase
     cleaned_sentences = []
     for sentence in sentences:
-        # Passage en minuscules
-        text = sentence.lower()
-        # Supprime spécifiquement le "'s" (ex: "children's" -> "children")
-        text = re.sub(r"'s\b", '', text)
-        # Supprime la ponctuation restante (ex: "!", "?", etc.)
-        text = re.sub(r'[^\w\s]', '', text)
-        # Découpe en mots
-        words = text.split()
-        cleaned_sentences.append(words)
+        words = sentence.lower().split()
+        cleaned_words = []
+        for word in words:
+            # Conserve uniquement les caractères alphanumériques
+            cleaned = re.sub(r'\W+', '', word)
+            if cleaned:
+                cleaned_words.append(cleaned)
+        cleaned_sentences.append(cleaned_words)
 
     if vocab is None:
+        # Récupère les mots uniques et les trie par ordre alphabétique
         all_words = set()
         for words in cleaned_sentences:
             all_words.update(words)
         features = sorted(list(all_words))
     else:
-        features = vocab
+        # Si vocab est fourni, il devient directement la liste des features
+        features = list(vocab)
 
     s = len(sentences)
     f = len(features)
     embeddings = np.zeros((s, f), dtype=int)
 
+    # Dictionnaire de correspondance mot -> indice dans features
+    vocab_dict = {word: idx for idx, word in enumerate(features)}
+
+    # Remplissage de la matrice
     for i, words in enumerate(cleaned_sentences):
         for word in words:
-            if word in features:
-                j = features.index(word)
+            if word in vocab_dict:
+                j = vocab_dict[word]
                 embeddings[i, j] += 1
 
     return embeddings, features

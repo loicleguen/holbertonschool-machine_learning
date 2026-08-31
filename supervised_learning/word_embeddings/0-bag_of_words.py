@@ -26,9 +26,13 @@ def bag_of_words(sentences, vocab=None):
     processed_sentences = []
 
     for sentence in sentences:
-        # Nettoyage de la ponctuation générique
-        clean_sentence = re.sub(r'[\'.,!?]', '', sentence.lower())
-        processed_sentences.append(clean_sentence.split())
+        # Passage en minuscules
+        s = sentence.lower()
+        # Supprime le 's possessif (ex: "children's" -> "children")
+        s = re.sub(r"'s\b", "", s)
+        # Supprime toute la ponctuation restante (ex: "!", ".", etc.)
+        s = re.sub(r'[^\w\s]', '', s)
+        processed_sentences.append(s.split())
 
     if vocab is None:
         vocab = sorted(list(set(

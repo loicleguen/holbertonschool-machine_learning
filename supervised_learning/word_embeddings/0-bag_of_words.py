@@ -26,11 +26,8 @@ def bag_of_words(sentences, vocab=None):
     processed_sentences = []
 
     for sentence in sentences:
-        # Passage en minuscules
         s = sentence.lower()
-        # Supprime le 's possessif (ex: "children's" -> "children")
         s = re.sub(r"'s\b", "", s)
-        # Supprime toute la ponctuation restante (ex: "!", ".", etc.)
         s = re.sub(r'[^\w\s]', '', s)
         processed_sentences.append(s.split())
 

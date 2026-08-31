@@ -27,11 +27,13 @@ def word2vec_model(sentences, vector_size=100, min_count=5, window=5,
     sg = 0 if cbow else 1
 
     model = gensim.models.Word2Vec(
+        sentences=sentences,
         vector_size=vector_size,
         min_count=min_count,
         window=window,
         negative=negative,
         sg=sg,
+        epochs=epochs,
         seed=seed,
         workers=workers
     )
@@ -40,7 +42,7 @@ def word2vec_model(sentences, vector_size=100, min_count=5, window=5,
     model.train(
         sentences,
         total_examples=model.corpus_count,
-        epochs=epochs
+        epochs=model.epochs
     )
 
     return model

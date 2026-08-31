@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module pour créer une matrice Bag of Words.
+Bag of Words embedding matrix
 """
 import re
 import numpy as np
@@ -8,51 +8,41 @@ import numpy as np
 
 def bag_of_words(sentences, vocab=None):
     """
-    Crée une matrice d'embedding Bag of Words.
+    Creates a Bag of Words embedding matrix from a list of sentences.
 
     Args:
-        sentences (list): Liste de phrases à analyser.
-        vocab (list, optional): Liste des mots du vocabulaire.
+        sentences (list of str): List of sentences to analyze.
+        vocab (list of str, optional): A predefined list of vocabulary words
+        to use for the analysis. If None, all unique words from sentences will
+        be used to build the vocabulary. Defaults to None.
 
     Returns:
-        tuple: (embeddings, features)
-            - embeddings: numpy.ndarray de forme (s, f)
-            - features: liste des features utilisées
+        tuple:
+            E (numpy.ndarray): A 2D array of shape (s, f) containing
+            word frequencies.
+            features (list): The list of features corresponding
+            to the columns of the E matrix.
     """
-    # Nettoyage et découpage des mots pour chaque phrase
-    cleaned_sentences = []
+    processed_sentences = []
+
     for sentence in sentences:
-        words = sentence.lower().split()
-        cleaned_words = []
-        for word in words:
-            # Conserve uniquement les caractères alphanumériques
-            cleaned = re.sub(r'\W+', '', word)
-            if cleaned:
-                cleaned_words.append(cleaned)
-        cleaned_sentences.append(cleaned_words)
+        # Nettoyage de la ponctuation générique
+        clean_sentence = re.sub(r'[\'.,!?]', '', sentence.lower())
+        processed_sentences.append(clean_sentence.split())
 
     if vocab is None:
-        # Récupère les mots uniques et les trie par ordre alphabétique
-        all_words = set()
-        for words in cleaned_sentences:
-            all_words.update(words)
-        features = sorted(list(all_words))
+        vocab = sorted(list(set(
+            word for s in processed_sentences for word in s
+        )))
     else:
-        # Si vocab est fourni, il devient directement la liste des features
-        features = list(vocab)
+        vocab = list(vocab)
 
-    s = len(sentences)
-    f = len(features)
-    embeddings = np.zeros((s, f), dtype=int)
+    word_to_index = {word: i for i, word in enumerate(vocab)}
+    E = np.zeros((len(sentences), len(vocab)), dtype=int)
 
-    # Dictionnaire de correspondance mot -> indice dans features
-    vocab_dict = {word: idx for idx, word in enumerate(features)}
+    for i, s in enumerate(processed_sentences):
+        for word in s:
+            if word in word_to_index:
+                E[i, word_to_index[word]] += 1
 
-    # Remplissage de la matrice
-    for i, words in enumerate(cleaned_sentences):
-        for word in words:
-            if word in vocab_dict:
-                j = vocab_dict[word]
-                embeddings[i, j] += 1
-
-    return embeddings, features
+    return E, vocab

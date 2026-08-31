@@ -22,21 +22,25 @@ def word2vec_model(sentences, vector_size=100, min_count=5, window=5,
         workers (int): Number of worker threads to train the model.
 
     Returns:
-        Word2Vec: The trained Gensim Word2Vec model.
+        gensim.models.Word2Vec: The trained Gensim Word2Vec model.
     """
-    # Dans Gensim: sg=0 correspond à CBOW et sg=1 correspond à Skip-gram
     sg = 0 if cbow else 1
 
     model = gensim.models.Word2Vec(
-        sentences=sentences,
         vector_size=vector_size,
         min_count=min_count,
         window=window,
         negative=negative,
         sg=sg,
-        epochs=epochs,
         seed=seed,
         workers=workers
+    )
+
+    model.build_vocab(sentences)
+    model.train(
+        sentences,
+        total_examples=model.corpus_count,
+        epochs=epochs
     )
 
     return model

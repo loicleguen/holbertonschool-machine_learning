@@ -47,15 +47,25 @@ class RNNDecoder(tf.keras.layers.Layer):
             - y: tensor (batch, vocab) vecteur pour le mot prédit
             - s: tensor (batch, units) nouvel état caché du décodeur
         """
+        # Calcul des poids et du vecteur de contexte
         context, _ = self.attention(s_prev, hidden_states)
+
+        # Vectorisation du mot x
         x = self.embedding(x)
+
+        # Ajout de la dimension temporelle : (batch, 1, units)
         context_expanded = tf.expand_dims(context, axis=1)
 
+        # Concaténation dans l'ordre : [context_vector, x]
         x = tf.concat([context_expanded, x], axis=-1)
 
-        output, s = self.gru(x, initial_state=s_prev)
+        # Passage dans le GRU
+        output, s = self.gru(x)
+
+        # Redimensionnement de la sortie pour le Dense
         output = tf.reshape(output, (-1, output.shape[2]))
 
+        # Projection finale sur le vocabulaire
         y = self.F(output)
 
         return y, s

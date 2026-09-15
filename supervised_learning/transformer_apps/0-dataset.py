@@ -34,7 +34,6 @@ class Dataset:
         Returns:
             tokenizer_pt, tokenizer_en: les tokenizers entraînés
         """
-        # Chargement des tokenizers pré-entraînés de base
         pt_base = transformers.AutoTokenizer.from_pretrained(
             'neuralmind/bert-base-portuguese-cased'
         )
@@ -42,23 +41,15 @@ class Dataset:
             'bert-base-uncased'
         )
 
-        # Générateurs d'itérateurs pour extraire le texte du tf.data.Dataset
-        def pt_iterator():
-            for pt, _ in data:
-                yield pt.numpy().decode('utf-8')
+        pt_texts = (pt.numpy().decode('utf-8') for pt, _ in data)
+        en_texts = (en.numpy().decode('utf-8') for _, en in data)
 
-        def en_iterator():
-            for _, en in data:
-                yield en.numpy().decode('utf-8')
-
-        # Entraînement des tokenizers avec un
-        #   vocabulaire maximum de 2**13 (8192)
         vocab_size = 2**13
         tokenizer_pt = pt_base.train_new_from_iterator(
-            pt_iterator(), vocab_size=vocab_size
+            pt_texts, vocab_size=vocab_size
         )
         tokenizer_en = en_base.train_new_from_iterator(
-            en_iterator(), vocab_size=vocab_size
+            en_texts, vocab_size=vocab_size
         )
 
         return tokenizer_pt, tokenizer_en

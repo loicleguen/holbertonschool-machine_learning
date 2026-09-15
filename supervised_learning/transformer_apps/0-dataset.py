@@ -3,7 +3,6 @@
 Module 0-dataset
 Contient la classe Dataset pour charger et préparer les données de traduction.
 """
-import tensorflow as tf
 import transformers
 from setup import load_pt2en
 

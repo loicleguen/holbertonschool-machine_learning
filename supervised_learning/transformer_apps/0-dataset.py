@@ -41,8 +41,12 @@ class Dataset:
             'bert-base-uncased'
         )
 
-        pt_texts = (pt.numpy().decode('utf-8') for pt, _ in data)
-        en_texts = (en.numpy().decode('utf-8') for _, en in data)
+        pt_texts = (
+            pt.decode('utf-8') for pt, _ in data.as_numpy_iterator()
+        )
+        en_texts = (
+            en.decode('utf-8') for _, en in data.as_numpy_iterator()
+        )
 
         vocab_size = 2**13
         tokenizer_pt = pt_base.train_new_from_iterator(

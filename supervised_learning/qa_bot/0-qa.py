@@ -38,8 +38,7 @@ def question_answer(question, reference):
     input_ids = tokenizer.convert_tokens_to_ids(tokens)
     input_mask = [1] * len(input_ids)
 
-    # Creating segment IDs: 0 for question tokens and 1 for reference
-    # tokens
+    # Creating segment IDs: 0 for question tokens and 1 for reference tokens
     segment_ids = ([0] * (len(question_tokens) + 2)
                    + [1] * (len(reference_tokens) + 1))
 
@@ -53,22 +52,17 @@ def question_answer(question, reference):
         [input_ids_tensor, input_mask_tensor, segment_ids_tensor]
     )
 
-    # Extracting the start and end logits from the model outputs
     start_logits = outputs[0]
     end_logits = outputs[1]
 
-    # Estimating the start and end indices of the answer in the reference
-    # text (excluding [CLS] token at index 0)
+    # Estimating indices (skipping index 0 / [CLS])
     start_index = tf.argmax(start_logits[0][1:], axis=-1) + 1
     end_index = tf.argmax(end_logits[0][1:], axis=-1) + 1
 
-    # If the start index is greater than the end index, no valid answer was
-    # found
+    # If start index is greater than end index, no valid answer found
     if start_index > end_index:
         return None
 
-    # Extracting the answer tokens from the reference text using the
-    # estimated indices
     answer_tokens = tokens[start_index:end_index + 1]
     answer = tokenizer.convert_tokens_to_string(answer_tokens)
 

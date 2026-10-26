@@ -18,9 +18,39 @@ def policy(matrix, weight):
     Returns:
         np.ndarray: La distribution de probabilités pour chaque action.
     """
-    # Calcul des logits (produit matriciel des états et des poids)
     z = np.dot(matrix, weight)
-
-    # Calcul de la fonction softmax pour obtenir des probabilités
     exp_z = np.exp(z - np.max(z))
     return exp_z / np.sum(exp_z, axis=1, keepdims=True)
+
+
+def policy_gradient(state, weight):
+    """
+    Calcule l'action à sélectionner et le gradient de politique Monte-Carlo.
+
+    Args:
+        state (np.ndarray): La matrice ou le vecteur représentant l'état.
+        weight (np.ndarray): La matrice de poids.
+
+    Returns:
+        tuple: (action, gradient)
+            - action (int): L'action choisie selon la distribution.
+            - gradient (np.ndarray): Le gradient de log-probabilité.
+    """
+    # S'assurer que state est au format (1, n)
+    if state.ndim == 1:
+        state = state.reshape(1, -1)
+
+    # Calcul de la distribution de probabilité avec la fonction policy
+    probs = policy(state, weight)
+
+    # Sélection aléatoire d'une action basée sur les probabilités calculées
+    action = np.random.choice(probs.shape[1], p=probs[0])
+
+    # Création du vecteur one-hot pour l'action choisie
+    d_softmax = probs.copy()
+    d_softmax[0, action] -= 1
+
+    # Calcul du gradient : s^T * (probs - one_hot) = -s^T * d_log_pi
+    grad = -np.dot(state.T, d_softmax)
+
+    return action, grad

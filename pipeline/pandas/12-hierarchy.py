@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Module contenant une fonction pour créer un MultiIndex hiérarchisé par Timestamp
-puis par origine de données (bitstamp / coinbase).
+Module contenant une fonction pour créer un MultiIndex hiérarchisé
+par Timestamp puis par origine de données (bitstamp / coinbase).
 """
 import pandas as pd
 index = __import__('10-index').index

@@ -1,0 +1,2 @@
+// Script qui se positionne sur la base de données my_db (ou la crée)
+use my_db

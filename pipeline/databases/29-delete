@@ -1,0 +1,2 @@
+// Script qui supprime tous les documents ayant name = "Holberton school" dans la collection school
+db.school.remove({ name: "Holberton school" })

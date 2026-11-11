@@ -1,6 +1,6 @@
-// Script qui ajoute le champ address avec la valeur "972 Mission street"
-// à tous les documents ayant name = "Holberton school"
-db.school.updateMany(
+// Script qui ajoute l me champ address avec la valeur "972 Mission street" à tous les documents correspondants
+db.school.update(
     { name: "Holberton school" },
-    { $set: { address: "972 Mission street" } }
+    { $set: { address: "972 Mission street" } },
+    { multi: true }
 )
